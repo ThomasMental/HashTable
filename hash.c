@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "C12.h"
+#include "hash.h"
 
 int hash_function(struct hash T, int k)
 {

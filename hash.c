@@ -1,7 +1,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "C12.h"
+
+struct anode {
+  int key;
+  char *value;
+  struct anode *next;
+};
+
+struct hash {
+    int size;
+    struct anode **table;
+};
 
 // get the index of key k
 int hash_function(struct hash T, int k)
@@ -49,7 +59,7 @@ void add(struct hash T, int k, char *v)
     tmp->next = NULL;
 
     struct anode *cur = T.table[index];
-    
+
     if (cur == NULL) 
     {
         T.table[index] = tmp; 

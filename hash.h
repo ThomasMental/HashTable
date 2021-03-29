@@ -9,7 +9,6 @@ struct hash {
     struct anode **table;
 };
 
-
 struct hash make_table(int s);
 
 char *search(struct hash T, int k);

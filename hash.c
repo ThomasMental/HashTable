@@ -1,14 +1,15 @@
-// initializes an empty hash table where the array has size s
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "hash.h"
+#include "C12.h"
 
+// get the index of key k
 int hash_function(struct hash T, int k)
 {
     return k % T.size;
 }
 
+// initializes an empty hash table where the array has size s
 struct hash make_table(int s) 
 {
     struct hash T;
@@ -41,31 +42,35 @@ void add(struct hash T, int k, char *v)
 
     // create the anode
     struct anode *tmp = (struct anode*)malloc(sizeof(struct anode));
-
     char *value = (char*)malloc(sizeof(char)*strlen(v));
     strcpy(value,v);
-    tmp->key = index;
+    tmp->key = k;
     tmp->value = value;
     tmp->next = NULL;
 
-    struct anode *cur = T.table[k];
-
+    struct anode *cur = T.table[index];
+    
     if (cur == NULL) 
     {
-        T.table[k] = tmp; 
+        T.table[index] = tmp; 
     }
     else 
     {
+        // if exists then replace the value
         while(cur != NULL)
         {
-            if(cur->key == k) 
+            if(k == cur->key)
             {
+                free(cur->value);
+                free(tmp);
                 cur->value = value;
                 return;
             }
             cur = cur->next;
         }
-        cur = tmp;
+        // otherwise put the anode 
+        tmp->next = T.table[index];
+        T.table[index] = tmp; 
     }
 }
 
@@ -75,10 +80,11 @@ void free_table(struct hash T)
     for (int i=0; i<T.size; i++)
     if(T.table[i] != NULL)
     {
-        // frees an list
+        // frees the linked list
         struct anode *cur = T.table[i];
         while(cur != NULL)
         {
+            free(cur->value);
             free(cur);
             cur = cur->next;
         }
@@ -86,8 +92,39 @@ void free_table(struct hash T)
     free(T.table);
 }
 
-
+// delete the key k from the hash table T
 void delete(struct hash T, int k)
 {
-    
+    int index = hash_function(T, k);
+    struct anode *cur = T.table[index];
+    struct anode *prev;
+
+    // delete the head node if itself holds the k
+    if(cur != NULL)
+    if(cur->key == k)
+    {
+        free(cur->value);
+        free(cur);
+        T.table[index] = cur->next;
+        return;
+    }
+
+    // search for the key to be deleted
+    while(cur != NULL)
+    {
+        if(cur->key == k)
+        {
+            break;
+        }
+        prev = cur;
+        cur = cur->next;
+    }
+
+    // if k is not present in linked list
+    if(cur == NULL)
+        return;
+
+    prev->next = cur->next;
+    free(cur->value);
+    free(cur);
 }
